@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notification</title>
+</head>
+<body>
+  <h1>Notification panel</h1>
+
+  <label for="name">Session:</label>
+  <input type="text" id="name"/>
+  <button id="create">Join</button>
+
+  <label for="content">Content:</label>
+  <input type="text" id="content"/>
+  <button id="post">Post</button>
+  <ul id="list"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io({transports: ['websocket'], upgrade: false});
+    document.getElementById('create').addEventListener('click', (e) => {
+      socket.emit('room.join', document.getElementById('name').value);
+    });
+    document.getElementById('post').addEventListener('click', (e) => {
+      socket.emit('event',
+      { content: document.getElementById('content').value,
+       room: document.getElementById('name').value});
+    });
+    var addLi = (message) => {
+      var li = document.createElement('li');
+      li.appendChild(document.createTextNode(message));
+      document.getElementById('list').appendChild(li);
+    };
+    socket.on('event', addLi);
+  </script>
+</body>
+</html>
